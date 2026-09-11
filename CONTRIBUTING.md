@@ -29,16 +29,16 @@
 <ul>
   <li><b>Website (root/app)</b>: Next.js 16 source code. Changes here affect the official X Linux site.</li>
   <li><b>Packages (packages/)</b>: Core system files like <code>x-release</code>. Essential for the OS identity.</li>
-  <li><b>Repository Tools</b>: Scripts like <code>build-repo.sh</code> used to generate the pacman-compatible database.</li>
+  <li><b>Repository Tools</b>: <code>build-packages.sh</code> builds the packages and regenerates the pacman-compatible database.</li>
 </ul>
 
 <h2 align="center" id="development-rules"> Development Rules </h2>
 
 <h3 align="center"> Web Development </h3>
 <ul>
-  <li>Maintain the visual style using <b>Tailwind CSS 4</b> and <b>Framer Motion</b>.</li>
+  <li>Maintain the visual style using <b>Tailwind CSS 4</b> and the X palette defined in <code>app/globals.css</code>.</li>
   <li>Ensure all new components are responsive and support both light and dark themes.</li>
-  <li>Check that 3D elements (Three.js) do not severely impact performance.</li>
+  <li>Keep the page lightweight: no 3D scenes or heavy animation libraries.</li>
 </ul>
 
 <h3 align="center"> System Packaging </h3>

@@ -7,9 +7,9 @@ ecosistema X Linux. Tiene dos roles que conviven en el mismo repo:
    datos de pacman se commitean bajo `public/` y se sirven tal cual en GitHub Pages
    como el repositorio `[x]` de pacman (y, bajo `public/x/`, como el endpoint nativo
    `.xp` que usa `xpm`).
-2. **Portal web** — un sitio Next.js (portada, descarga, docs, developers, contacto)
-   que se exporta a archivos estáticos y se despliega en el mismo sitio de GitHub
-   Pages.
+2. **Portal web** — una página Next.js que explica el repositorio (endpoints, uso con
+   pacman/xpm, paquetes y flujo de publicación) y se exporta como sitio estático al
+   mismo GitHub Pages.
 
 Los paquetes **no** se construyen en CI. Se construyen localmente, se commitean al
 repo, y lo único que hace el workflow de deploy es reconstruir la web y publicar todo
@@ -44,7 +44,7 @@ Coexisten dos vías de empaquetado en el ecosistema:
 | `packages/` | Fuentes de paquetes. `PKGBUILD` (vía pacman) y, donde exista, `XBUILD` (vía nativa) por paquete. |
 | `public/` | Contenido estático servido en Pages. `public/repo/x86_64/` contiene el repositorio `[x]` de pacman; `public/x/x86_64/` el endpoint nativo `.xp`; el resto son assets de la web. |
 | `build-packages.sh` | Script local para construir los paquetes de la vía pacman y regenerar la base de datos del repo. |
-| `app/`, `components/`, `lib/` | El código fuente del portal Next.js. |
+| `app/` | Código fuente de la página Next.js. |
 | `.github/workflows/` | CI/CD. `build.yml` construye y despliega el sitio en GitHub Pages. |
 | `docs/` | Documentación del repositorio (este directorio y `build-x-native-workflow.md`). |
 

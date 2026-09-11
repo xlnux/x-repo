@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@source "../node_modules/@xscriptor/xcomponents/dist";
 
 @theme {
   --color-X-bg-dark: #000000;
@@ -30,76 +30,7 @@
   font-style: normal;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-
 body {
   font-family: 'Hack Nerd Font', monospace;
-  @apply bg-X-bg-light text-X-text-light dark:bg-X-bg-dark dark:text-X-text-dark transition-colors duration-500;
-}
-
-.glass-panel {
-  @apply bg-white/10 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-xl shadow-xl;
-}
-
-/* Markdown / Prose Styles */
-.prose {
-  max-width: none !important;
-}
-
-.prose h1,
-.prose h2,
-.prose h3 {
-  font-family: 'Hack Nerd Font', monospace !important;
-  margin-top: 1.5em;
-  margin-bottom: 0.8em;
-}
-
-.prose p {
-  margin-bottom: 1.25em;
-  line-height: 1.75;
-}
-
-.prose ul,
-.prose ol {
-  margin-bottom: 1.25em;
-}
-
-.prose li {
-  margin-bottom: 0.5em;
-}
-
-.prose code {
-  background-color: rgba(125, 125, 125, 0.1);
-  padding: 0.2em 0.4em;
-  border-radius: 0.25rem;
-  font-size: 0.9em;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.prose pre {
-  background: #1e1e1e !important;
-  /* Dark background always */
-  color: #e5e5e5 !important;
-  /* Light text always */
-  border: 1px solid #333;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  margin-bottom: 1.5em;
-}
-
-.prose blockquote {
-  border-left-color: #bc13fe;
-  font-style: italic;
-  padding-left: 1em;
+  @apply bg-X-bg-dark text-X-text-dark;
 }
