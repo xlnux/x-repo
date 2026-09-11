@@ -13,6 +13,7 @@
     "@react-three/fiber": "^9.5.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/three": "^0.182.0",
+    "@xscriptor/xcomponents": "^0.2.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.26.2",
     "lucide-react": "^0.562.0",

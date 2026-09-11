@@ -3,9 +3,7 @@
 ## Nivel superior
 
 ```
-app/                  Fuente del portal Next.js (App Router)
-components/           Componentes React usados por el portal
-lib/                  Helpers de cliente (diccionario i18n)
+app/                  Página Next.js (layout, page y estilos)
 packages/             Fuentes de paquetes y artefactos de build
 public/               Contenido estático servido en GitHub Pages
   repo/x86_64/        Repositorio [x] de pacman (db + tarballs .pkg.tar.zst)
