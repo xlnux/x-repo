@@ -26,10 +26,18 @@ package directory.
 ### External package (x-scripts)
 
 `x-scripts` is built in the sibling `scripts` repo (its `PKGBUILD` lives at
-`scripts/packaging/`), not here. Build it there and import the resulting tarball so
-the repo regeneration picks it up — either drop it under a `packages/*/` directory or
-place it directly in `public/repo/x86_64/` before running the script. There is no
-`packages/x-scripts/` source directory in this repo.
+`scripts/packaging/`), not here, and it ships the offline equisdots desktop
+snapshot used by the installer. Build it there:
+
+```bash
+cd scripts/packaging && makepkg -f
+```
+
+`build-packages.sh` imports the resulting
+`../scripts/packaging/x-scripts-*.pkg.tar.zst` automatically and removes it from the
+build directory. You can also place the tarball directly in `public/repo/x86_64/`
+before running the script. There is no `packages/x-scripts/` source directory in
+this repo.
 
 ### Native .xp packages (xpm/xpkg path)
 
@@ -42,18 +50,23 @@ automated native workflow is disabled and kept for reference in
 From the repository root run:
 
 ```bash
-./build-packages.sh
+./build-packages.sh              # builds x-release/x-dev + imports x-scripts + indexes
+./build-packages.sh --index-only # skip the local builds (only import/index)
 ```
 
 The script:
 
-1. Rebuilds the configured PKGBUILD packages (`x-release`, `x-dev`) with `makepkg`.
-2. Copies every `packages/*/*.pkg.tar.zst` into `public/repo/x86_64/` and deletes the
-   build artifacts.
-3. Regenerates the pacman database from every tarball in the directory:
+1. Rebuilds the configured PKGBUILD packages (`x-release`, `x-dev`) with `makepkg`
+   unless `--index-only` is given.
+2. Imports `../scripts/packaging/x-scripts-*.pkg.tar.zst` when present and copies the
+   freshly built `x-release`/`x-dev` tarballs into `public/repo/x86_64/`, deleting
+   only those build artifacts. The committed leftovers under `packages/xpm`,
+   `packages/xpkg`, `packages/xfetch` and `packages/xtop` are not touched.
+3. Rebuilds the pacman database from scratch from every tarball in the directory
+   (this also drops entries for packages that no longer exist):
 
    ```bash
-   repo-add -n -R x.db.tar.gz *.pkg.tar.zst
+   repo-add -R x.db.tar.gz *.pkg.tar.zst
    cp x.db.tar.gz x.db
    cp x.files.tar.gz x.files
    sha256sum * > SHA256SUMS
