@@ -26,10 +26,18 @@ directorio del paquete.
 ### Paquete externo (x-scripts)
 
 `x-scripts` se construye en el repo hermano `scripts` (su `PKGBUILD` vive en
-`scripts/packaging/`), no aquí. Constrúyelo allí e importa el tarball resultante de
-forma que la regeneración del repo lo recoja — ya sea colocándolo bajo un directorio
-`packages/*/` o directamente en `public/repo/x86_64/` antes de ejecutar el script. No
-existe un directorio de fuente `packages/x-scripts/` en este repo.
+`scripts/packaging/`), no aquí, y lleva el snapshot offline del escritorio equisdots
+que usa el instalador. Constrúyelo allí:
+
+```bash
+cd scripts/packaging && makepkg -f
+```
+
+`build-packages.sh` importa automáticamente el
+`../scripts/packaging/x-scripts-*.pkg.tar.zst` resultante y lo elimina del directorio
+de build. También puedes colocar el tarball directamente en
+`public/repo/x86_64/` antes de ejecutar el script. No existe un directorio de fuente
+`packages/x-scripts/` en este repo.
 
 ### Paquetes nativos .xp (vía xpm/xpkg)
 
@@ -42,19 +50,23 @@ workflow nativo automatizado está desactivado y se conserva como referencia en
 Desde la raíz del repositorio ejecuta:
 
 ```bash
-./build-packages.sh
+./build-packages.sh              # construye x-release/x-dev + importa x-scripts + indexa
+./build-packages.sh --index-only # omite los builds locales (solo importa/indexa)
 ```
 
 El script:
 
 1. Reconstruye los paquetes PKGBUILD configurados (`x-release`, `x-dev`) con
-   `makepkg`.
-2. Copia todos los `packages/*/*.pkg.tar.zst` a `public/repo/x86_64/` y borra los
-   artefactos de build.
-3. Regenera la base de datos de pacman a partir de todos los tarballs del directorio:
+   `makepkg` salvo con `--index-only`.
+2. Importa `../scripts/packaging/x-scripts-*.pkg.tar.zst` cuando existe y copia los
+   tarballs recién construidos de `x-release`/`x-dev` a `public/repo/x86_64/`,
+   borrando solo esos artefactos de build. Los binarios commiteados bajo
+   `packages/xpm`, `packages/xpkg`, `packages/xfetch` y `packages/xtop` no se tocan.
+3. Reconstruye la base de datos de pacman desde cero a partir de todos los tarballs
+   del directorio (esto también elimina entradas de paquetes que ya no existen):
 
    ```bash
-   repo-add -n -R x.db.tar.gz *.pkg.tar.zst
+   repo-add -R x.db.tar.gz *.pkg.tar.zst
    cp x.db.tar.gz x.db
    cp x.files.tar.gz x.files
    sha256sum * > SHA256SUMS

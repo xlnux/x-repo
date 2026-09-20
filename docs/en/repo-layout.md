@@ -47,12 +47,12 @@ Only these two are built by `build-packages.sh` from their `PKGBUILD` today.
 repo `xlnux/scripts` under `scripts/packaging/` and packages the whole provisioning
 payload (phases, CLI `x`, configs). The resulting tarball is built there and **imported**
 into this repo, committed under `public/repo/x86_64/` (currently
-`x-scripts-0.1.0-1-any.pkg.tar.zst`).
+`x-scripts-0.1.0-13-any.pkg.tar.zst`).
 
 - There is no `packages/x-scripts/` source directory here.
-- The published artifact in this repo is version `0.1.0-1`; the `PKGBUILD` in the
-  `scripts` repo has since moved on (pkgrel 11). Re-import an updated build from
-  `scripts/packaging/` when republishing the payload.
+- The published artifact and the `PKGBUILD` in `scripts/packaging/` are aligned at
+  `0.1.0-13` (the equisdots desktop snapshot). `build-packages.sh` imports the
+  sibling build automatically; re-run it when republishing the payload.
 
 ### Prebuilt artifacts, no sources
 
@@ -70,7 +70,7 @@ This directory is the pacman-facing repository. Files present:
 |---|---|
 | `x.db`, `x.db.tar.gz` | Package database (`x.db` is the uncompressed copy of `x.db.tar.gz`). |
 | `x.files`, `x.files.tar.gz` | File-list database for `pacman -F`. |
-| `*.pkg.tar.zst` | The packages: `x-release-1.0-8`, `x-dev-1.0-2`, `x-scripts-0.1.0-1`, `xpm-0.1.0-3`. |
+| `*.pkg.tar.zst` | The packages: `x-release-1.0-8`, `x-dev-1.0-2`, `x-scripts-0.1.0-13`, `xpm-0.1.0-3`. |
 | `SHA256SUMS` | Checksums over every file in the directory. |
 | `signing.pub`, `trustedkeys.gpg` | Signing/trust material consumed by the native endpoint. |
 
@@ -88,8 +88,8 @@ The database is never edited by hand. `build-packages.sh` regenerates it with
 
 ```bash
 cd public/repo/x86_64
-rm -f x.db x.files x.db.tar.gz.old x.files.tar.gz.old
-repo-add -n -R x.db.tar.gz *.pkg.tar.zst
+rm -f x.db x.files x.db.tar.gz x.files.tar.gz x.db.tar.gz.old x.files.tar.gz.old
+repo-add -R x.db.tar.gz *.pkg.tar.zst
 rm -f x.db x.files
 cp x.db.tar.gz x.db
 cp x.files.tar.gz x.files
@@ -97,9 +97,8 @@ sha256sum * > SHA256SUMS
 ```
 
 - `repo-add` creates `x.db.tar.gz` and `x.files.tar.gz` from the `.pkg.tar.zst` files.
-- `-R` removes any package from the database that is no longer in the directory
-  (cleanup of old versions); `-n` only adds packages that are not already in the
-  database.
+- The database is rebuilt from scratch from the tarballs present in the directory,
+  so entries for packages that no longer exist are dropped too.
 - `x.db`/`x.files` are plain copies of the `.tar.gz` files so pacman can read them
   directly.
 - No signing flag is passed today, so the database is regenerated unsigned.
@@ -121,8 +120,10 @@ Local script (run from the repo root, requires an Arch-like environment with
 1. Builds the configured PKGBUILD packages in place (`build_pkgbuild x-release`,
    `build_pkgbuild x-dev`) using `makepkg -cf --noconfirm`. The `build_xbuild` helper
    for the native path is present but commented out.
-2. Copies every `packages/*/*.pkg.tar.zst` into `public/repo/x86_64/` and removes the
-   build artifact afterwards.
+2. Imports `../scripts/packaging/x-scripts-*.pkg.tar.zst` when present, copies the
+   freshly built `x-release`/`x-dev` tarballs into `public/repo/x86_64/` and removes
+   the build artifacts afterwards (the committed leftovers under the other
+   `packages/*` directories are not touched).
 3. Regenerates the pacman database and `SHA256SUMS` as shown above.
 4. Prints the closing reminder:
 
@@ -131,6 +132,6 @@ Commit public/repo/x86_64/ and push, then run the deploy workflow.
 ```
 
 To add a new PKGBUILD package to the flow, add its directory to `build_pkgbuild`
-calls. To import an externally built package (such as `x-scripts`), place its
-`.pkg.tar.zst` so the copy step picks it up (e.g. drop it under a `packages/*/`
-directory or directly into `public/repo/x86_64/` before running the script).
+calls. Externally built packages (such as `x-scripts`) are imported automatically
+from `../scripts/packaging/`; you can also drop a `.pkg.tar.zst` directly into
+`public/repo/x86_64/` before running `./build-packages.sh --index-only`.
